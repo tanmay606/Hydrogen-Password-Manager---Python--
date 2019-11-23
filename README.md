@@ -36,7 +36,7 @@ Resources :
   
    1. Recovery Of Master Password Is Not Supported Till Now.
    2. Code Is Currently Not Quite UserFriendly.
-   3. Need T Work On More Efficiency And Security.
+   3. Need To Work On More Efficiency And Security.
    4. Due To Implementation Of Database Encryption Mechanism Avoid Closing Program Indirectly.
 
    (I Will Appreciate Your Feedbacks, Criticism,Suggestions etc. )
