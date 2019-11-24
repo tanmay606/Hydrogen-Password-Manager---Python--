@@ -65,4 +65,10 @@ Resources :
 
 
 
+[IMP]Please Ensure To Install Below Requisite Modules Before Using This To Avoid Import Error :
+
+ 1. Cryptography
+ 2. PyQt5
+
+
 (If black window annoys you , just change .py extention with .pyw)

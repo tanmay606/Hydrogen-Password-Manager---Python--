@@ -1,13 +1,22 @@
 import base64
 from os import urandom,getenv,chdir,getcwd,remove,path
-from cryptography.fernet import Fernet,InvalidToken
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from SqlCmd import DatabaseManagement
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
 import threading
+
+try:
+	from cryptography.fernet import Fernet,InvalidToken
+	from cryptography.hazmat.backends import default_backend
+	from cryptography.hazmat.primitives import hashes
+	from SqlCmd import DatabaseManagement
+	from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+	from PyQt5 import QtCore, QtGui, QtWidgets
+	from PyQt5.QtWidgets import QMessageBox
+except ImportError:
+	print("Please Install Required Modules Below To Run This Program : ")
+	print("1. cryptography")
+	print("2. PyQt5 ")
+	print("3. SqlCmd (ensure it exists in hydrogen directory )")
+	input()
+	pass
 
 program_config = 'Hydrogen.conf'
 database_name = 'secure.db'
