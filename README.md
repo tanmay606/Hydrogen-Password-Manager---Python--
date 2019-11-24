@@ -63,3 +63,6 @@ Resources :
 	
 		It's Very Simple To Use This Program, I Will Also Attach A Youtube Video With This For More Ease.
 
+
+
+(If black window annoys you , just change .py extention with .pyw)
