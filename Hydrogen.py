@@ -15,6 +15,7 @@ except ImportError:
 	print("1. cryptography")
 	print("2. PyQt5 ")
 	print("3. SqlCmd (ensure it exists in hydrogen directory )")
+	print("\n To Install Use : (pip install modulename)")
 	input()
 	pass
 
