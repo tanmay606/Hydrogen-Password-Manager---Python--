@@ -25,12 +25,14 @@ SqlMgmt = DatabaseManagement(database_name)
 
 
 class DatabaseAccess(object):
+	#! this method is causing errors in functioning hence delayed this till i solve the matter.
     orginal_db_name = database_name
     newdatabase_name = orginal_db_name + ".enc"
     def __init__(self,mkey):
         self.mkey=mkey
         pass
     def LockDatabase(self):
+        #print("locking")
         with open(DatabaseAccess.orginal_db_name,"rb") as a:
             plaintextdata=a.read()
         #database removal code call here.
@@ -315,10 +317,10 @@ class Ui_PWManager(object):
         self.RefreshCredentials()
 
     def ClosePWDManager(self):
-        print(mkey)
-        DBSecurity = DatabaseAccess(mkey)
+        #print(mkey)
+        #DBSecurity = DatabaseAccess(mkey)
         SqlMgmt.CloseConnections()
-        DBSecurity.LockDatabase() #!lock at the end.
+        #DBSecurity.LockDatabase() #!lock at the end.
         self.table_widget.clearContents()
         #SqlMgmt.CloseConnections()
         PWManager.close()
@@ -491,8 +493,8 @@ class CHECKACCESS(object):
             if ">>" in eachline:
                 mkey_ret = eachline.split(">>")[1]
                 mkey = mkey_ret
-                DBSecurity = DatabaseAccess(mkey)
-                DBSecurity.UnlockDatabase() #!unlock before use.
+                #DBSecurity = DatabaseAccess(mkey)
+                #DBSecurity.UnlockDatabase() #!unlock before use.
             if "Environment:" in eachline:
                 eachline=eachline.split("Environment:")[1]
                 if "ALREADYSET" in eachline:
@@ -683,7 +685,7 @@ class EnvCreationWizard(object):
         with open(program_config,'wb') as writeconfig:
             writeconfig.write(b'Environment:ALREADYSET\n')
             writeconfig.write(mkey)
-            DBSecurity = DatabaseAccess(mkey)
+            #DBSecurity = DatabaseAccess(mkey)
             
         self.msgBox = QMessageBox()
         self.msgBox.setIcon(QMessageBox.Information)
@@ -693,7 +695,7 @@ class EnvCreationWizard(object):
         self.msgBox.show()
         CreateWizardForm.close()
         SqlMgmt.CloseConnections()
-        DBSecurity.LockDatabase() #!lock initially.
+        #DBSecurity.LockDatabase() #!lock initially.
 
 
     def TriggerCreationWizard(self, CreateWizardForm):
