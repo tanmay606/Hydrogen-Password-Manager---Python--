@@ -10,9 +10,9 @@ from PyQt5.QtWidgets import QMessageBox
 import threading
 
 program_config = 'Hydrogen.conf'
-database_name = 'test.db'
+database_name = 'secure.db'
 database_status = True
-mkey = b""
+mkey = b"" #!responsible for storing key for encryption mechanism. ( don't touch it unless you know what you are doing.)
 
 
 try:
