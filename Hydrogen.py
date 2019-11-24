@@ -687,9 +687,9 @@ class EnvCreationWizard(object):
         self.Hydrogen_ID.clear()
         self.Hydrogen_Password.clear()
         Ukey = base64.urlsafe_b64encode(self.kdf.derive(user_ID)) #!username key is created.
-        Ukey = b"[P]"+Ukey
+        Ukey = b"[U]"+Ukey
         Pkey = base64.urlsafe_b64encode(self.qdf.derive(Password)) #! password key is generated.
-        Pkey = b"[U]"+Pkey
+        Pkey = b"[P]"+Pkey
         mkey = Fernet.generate_key()
         mkey = b">>"+mkey
         with open('pmanager.key','wb') as keys:
