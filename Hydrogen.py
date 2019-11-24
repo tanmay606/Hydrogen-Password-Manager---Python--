@@ -25,7 +25,12 @@ SqlMgmt = DatabaseManagement(database_name)
 
 
 class DatabaseAccess(object):
-	#! this method is causing errors in functioning hence delayed this till i solve the matter.
+    """
+     This method is causing errors in functioning hence delayed this till i solve the matter.
+    
+     This method is responsible for encryption of database, after use of sqlite and decryption of database before the use of sqlite
+     it will ensure that your data will not be stored in plaintext, cuz login mechanism is safe .
+    """
     orginal_db_name = database_name
     newdatabase_name = orginal_db_name + ".enc"
     def __init__(self,mkey):
