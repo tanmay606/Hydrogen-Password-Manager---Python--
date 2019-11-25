@@ -432,6 +432,7 @@ class CHECKACCESS(object):
         self.Hydrogen_ID.setText("")
         self.Hydrogen_ID.setObjectName("Hydrogen_ID")
         self.Hydrogen_Password = QtWidgets.QLineEdit(Form)
+        self.Hydrogen_Password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.Hydrogen_Password.setGeometry(QtCore.QRect(320, 261, 201, 41))
         self.Hydrogen_Password.setStyleSheet("color:green")
         self.Hydrogen_Password.setObjectName("Hydrogen_Password")
