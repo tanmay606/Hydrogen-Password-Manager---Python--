@@ -1,35 +1,36 @@
 import base64
-from os import urandom,getenv,chdir,getcwd,remove,path
+from os import urandom, getenv, chdir, getcwd, remove, path
 import threading
 
 try:
-	from cryptography.fernet import Fernet,InvalidToken
-	from cryptography.hazmat.backends import default_backend
-	from cryptography.hazmat.primitives import hashes
-	from SqlCmd import DatabaseManagement
-	from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-	from PyQt5 import QtCore, QtGui, QtWidgets
-	from PyQt5.QtWidgets import QMessageBox
+    from cryptography.fernet import Fernet, InvalidToken
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import hashes
+    from SqlCmd import DatabaseManagement
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    from PyQt5 import QtCore, QtGui, QtWidgets
+    from PyQt5.QtWidgets import QMessageBox
+    from Ersr import Eraser
 except ImportError:
-	print("Please Install Required Modules Below To Run This Program : ")
-	print("1. cryptography")
-	print("2. PyQt5 ")
-	print("3. SqlCmd (ensure it exists in hydrogen directory )")
-	print("\n To Install Use : (pip install modulename)")
-	input()
-	pass
+    print("Please Install Required Modules Below To Run This Program : ")
+    print("1. cryptography")
+    print("2. PyQt5 ")
+    print("3. SqlCmd (ensure it exists in hydrogen directory )")
+    print("\n To Install Use : (pip install modulename)")
+    input()
+    pass
 
 program_config = 'Hydrogen.conf'
 database_name = 'secured.db'
 database_status = True
-mkey = b"" #!responsible for storing key for encryption mechanism. ( don't touch it unless you know what you are doing.)
-
+DBEraser = Eraser(database_name)
+mkey = b""  # !responsible for storing key for encryption mechanism. ( don't touch it unless you know what you are doing.)
 
 try:
     key_location = getenv('userprofile')
     chdir(key_location)
 except:
-    #!maintain current directory.
+    # !maintain current directory.
     pass
 SqlMgmt = DatabaseManagement(database_name)
 
@@ -37,40 +38,43 @@ SqlMgmt = DatabaseManagement(database_name)
 class DatabaseAccess(object):
     """
      This method is causing errors in functioning hence delayed this till i solve the matter.
-    
+
      This method is responsible for encryption of database, after use of sqlite and decryption of database before the use of sqlite
      it will ensure that your data will not be stored in plaintext, cuz login mechanism is safe .
     """
     orginal_db_name = database_name
     newdatabase_name = orginal_db_name + ".enc"
-    def __init__(self,mkey):
-        self.mkey=mkey
+
+    def __init__(self, mkey):
+        self.mkey = mkey
         pass
+
     def LockDatabase(self):
-        #print("locking")
-        with open(DatabaseAccess.orginal_db_name,"rb") as a:
-            plaintextdata=a.read()
-        #database removal code call here.
+        # print("locking")
+        with open(DatabaseAccess.orginal_db_name, "rb") as a:
+            plaintextdata = a.read()
+        # database removal code call here.
         f = Fernet(self.mkey)
         enc_db = f.encrypt(plaintextdata)
         self.newdatabase_name = DatabaseAccess.orginal_db_name
-        with open(DatabaseAccess.newdatabase_name,"wb") as b:
+        with open(DatabaseAccess.newdatabase_name, "wb") as b:
             b.write(enc_db)
         if path.isfile(DatabaseAccess.orginal_db_name):
             SqlMgmt.DeleteDatabase()
 
         pass
+
     def UnlockDatabase(self):
-        with open(DatabaseAccess.newdatabase_name,"rb") as c:
+        with open(DatabaseAccess.newdatabase_name, "rb") as c:
             self.enctext = c.read()
-        #encrypted database removal here.
+        # encrypted database removal here.
         remove(DatabaseAccess.newdatabase_name)
         f = Fernet(self.mkey)
         try:
             dec_db = f.decrypt(self.enctext)
         except InvalidToken:
-            #!wrong key provided to unlock database.
-            database_status = False #!it will not let program to open due to locked database.
+            # !wrong key provided to unlock database.
+            database_status = False  # !it will not let program to open due to locked database.
             self.error_msgBox = QMessageBox()
             self.error_msgBox.setIcon(QMessageBox.Critical)
             self.error_msgBox.setText("wrong Key Provided, Database Is Encrypted Till Valid Key Provided")
@@ -78,12 +82,9 @@ class DatabaseAccess(object):
             self.error_msgBox.setStandardButtons(QMessageBox.Ok)
             self.error_msgBox.show()
 
-        with open(DatabaseAccess.orginal_db_name,"wb") as d:
+        with open(DatabaseAccess.orginal_db_name, "wb") as d:
             d.write(dec_db)
         pass
-
-
-
 
 
 class SB_Dialog(object):
@@ -123,7 +124,7 @@ class SB_Dialog(object):
         self.other_acc_type.setObjectName("other_acc_type")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.other_acc_type)
         self.label_2 = QtWidgets.QLabel(self.formGroupBox)
-        self.other_acc_type.setPlaceholderText("Ignore This, If Specific Account Already Choosen Above.") 
+        self.other_acc_type.setPlaceholderText("Ignore This, If Specific Account Already Choosen Above.")
         font = QtGui.QFont()
         font.setFamily("Verdana")
         self.label_2.setFont(font)
@@ -191,15 +192,15 @@ class SB_Dialog(object):
         SBDialog.close()
 
     def saveCredInfo(self):
-        #SqlMgmt=DatabaseManagement(database_name)
+        # SqlMgmt=DatabaseManagement(database_name)
         SqlMgmt.CreateTable()
-        #.print(len(SqlMgmt.FetchData()))
+        # .print(len(SqlMgmt.FetchData()))
         if len(SqlMgmt.FetchData()) == 0:
-            #!no data so reset id to 0
+            # !no data so reset id to 0
             self.position = 0
         else:
-            self.position=len(SqlMgmt.FetchData())
-        print("will save by ID %s"%self.position)
+            self.position = len(SqlMgmt.FetchData())
+        print("will save by ID %s" % self.position)
         username_tosave = self.save_userid.text()
         self.save_userid.clear()
         password_tosave = self.save_userpwd.text()
@@ -209,22 +210,22 @@ class SB_Dialog(object):
         otherspecificacc = self.other_acc_type.text()
         self.other_acc_type.clear()
         if accounttype == 'Other':
-            #!user should provide other name.
+            # !user should provide other name.
             if len(otherspecificacc) == 0:
                 otherspecificacc = "Other"
             else:
-            	#!take user inputed account name.
+                # !take user inputed account name.
                 pass
-            SqlMgmt.InsertNewDetails(self.position,otherspecificacc,username_tosave,password_tosave)
-            
+            SqlMgmt.InsertNewDetails(self.position, otherspecificacc, username_tosave, password_tosave)
+
         elif accounttype != "Other":
-            #!specific option found in list.
-            SqlMgmt.InsertNewDetails(self.position,accounttype,username_tosave,password_tosave)
+            # !specific option found in list.
+            SqlMgmt.InsertNewDetails(self.position, accounttype, username_tosave, password_tosave)
             pass
 
-        #print(SqlMgmt.FetchData())
+        # print(SqlMgmt.FetchData())
         SBDialog.close()
-        #SqlMgmt.CloseConnections()
+        # SqlMgmt.CloseConnections()
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -330,21 +331,21 @@ class Ui_PWManager(object):
         self.programmer_banner.setObjectName("programmer_banner")
         self.retranslateUi(PWManager)
         QtCore.QMetaObject.connectSlotsByName(PWManager)
-        #self.table_widget.clearContents()        
+        # self.table_widget.clearContents()
         self.RefreshCredentials()
 
     def ClosePWDManager(self):
-        #print(mkey)
+        # print(mkey)
         DBSecurity = DatabaseAccess(mkey)
         SqlMgmt.CloseConnections()
-        DBSecurity.LockDatabase() #!lock at the end.
+        DBSecurity.LockDatabase()  # !lock at the end.
         self.table_widget.clearContents()
-        #SqlMgmt.CloseConnections()
+        # SqlMgmt.CloseConnections()
         PWManager.close()
+        DBEraser.RunEraser()
+
     def OpenSBManager(self):
         SBDialog.show()
-        
-
 
     def DeleteAcc(self):
         DeleteFrm.show()
@@ -353,42 +354,42 @@ class Ui_PWManager(object):
 
     def RefreshCredentials(self):
         global SqlMgmt
-        #SqlMgmt = DatabaseManagement(database_name)
+        # SqlMgmt = DatabaseManagement(database_name)
         if SqlMgmt.IsClose:
             SqlMgmt = DatabaseManagement(database_name)
 
         SqlMgmt.CreateTable()
-        data=SqlMgmt.FetchData()
+        data = SqlMgmt.FetchData()
         if len(data) == 0:
             self.table_widget.clearContents()
         self.table_widget.clearContents()
-        for rowno,rowdata in enumerate(data):
-            for colno,coldata in enumerate(rowdata):
-                self.table_widget.setItem(rowno,colno,QtWidgets.QTableWidgetItem(str(coldata)))
-        
+        for rowno, rowdata in enumerate(data):
+            for colno, coldata in enumerate(rowdata):
+                self.table_widget.setItem(rowno, colno, QtWidgets.QTableWidgetItem(str(coldata)))
 
-        #print("this is refresh")
+        # print("this is refresh")
         pass
+
     def DeleteBatch(self):
         global SqlMgmt
-        data=SqlMgmt.FetchData()
-        for rowno,rowdata in enumerate(data):
-            for colno,coldata in enumerate(rowdata):
-                self.table_widget.setItem(rowno,colno,QtWidgets.QTableWidgetItem(str("")))
+        data = SqlMgmt.FetchData()
+        for rowno, rowdata in enumerate(data):
+            for colno, coldata in enumerate(rowdata):
+                self.table_widget.setItem(rowno, colno, QtWidgets.QTableWidgetItem(str("")))
         SqlMgmt.DeleteDatabase()
-        SqlMgmt = DatabaseManagement(database_name)  
+        SqlMgmt = DatabaseManagement(database_name)
 
     def DeleteEnvironment(self):
         SqlMgmt.CloseConnections()
         SqlMgmt.DeleteDatabase()
-        sys_files = ['pmanager.key','Hydrogen.conf']
+        sys_files = ['pmanager.key', 'Hydrogen.conf']
         for eachfile in sys_files:
             try:
                 remove(eachfile)
                 PWManager.close()
             except FileNotFoundError as msg:
                 print(msg)
-                print("unable to delete %s"%eachfile)
+                print("unable to delete %s" % eachfile)
                 pass
 
     def retranslateUi(self, PWManager):
@@ -400,7 +401,8 @@ class Ui_PWManager(object):
         self.delete_account.setText(_translate("PWManager", "Delete Account"))
         self.delete_env.setText(_translate("PWManager", "Delete Environment"))
         self.close_vault.setText(_translate("PWManager", "Close Vault"))
-        self.programmer_banner.setText(_translate("PWManager", "Written By : Tanmay Upadhyay (kevinthemetnik@gmail.com)"))
+        self.programmer_banner.setText(
+            _translate("PWManager", "Written By : Tanmay Upadhyay (kevinthemetnik@gmail.com)"))
         self.close_vault.clicked.connect(self.ClosePWDManager)
         self.add_account.clicked.connect(self.OpenSBManager)
         self.update_account.clicked.connect(self.DeleteBatch)
@@ -431,7 +433,7 @@ class CHECKACCESS(object):
         self.Hydrogen_ID = QtWidgets.QLineEdit(Form)
         self.Hydrogen_ID.setGeometry(QtCore.QRect(320, 161, 201, 41))
         self.Hydrogen_ID.setStyleSheet("color:green\n"
-"")
+                                       "")
         self.Hydrogen_ID.setText("")
         self.Hydrogen_ID.setObjectName("Hydrogen_ID")
         self.Hydrogen_Password = QtWidgets.QLineEdit(Form)
@@ -464,38 +466,39 @@ class CHECKACCESS(object):
 
         self.TriggerCheckAccess(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+
     def CloseAccessCheck(self):
         AccessCheck.close()
 
     def AuthenticateAccess(self):
         global mkey
-        #print("login button pressed.")
+        # print("login button pressed.")
         self.input_hydrogenID = self.Hydrogen_ID.text()
         self.input_hydrogenPWD = self.Hydrogen_Password.text()
         self.Hydrogen_ID.clear()
         self.Hydrogen_Password.clear()
 
-        #!Try To Access Stored Hashes.
+        # !Try To Access Stored Hashes.
         try:
             self.key_location = getenv('userprofile')
             chdir(self.key_location)
         except:
-            #!maintain current directory.
+            # !maintain current directory.
             pass
 
-        #print('Current Dir : %s'%getcwd())
-        self.config=""
-        self.username_hash=""
-        self.password_hash=""
-        self.dummy=False
-        #!will open configuration file to capture salt.
+        # print('Current Dir : %s'%getcwd())
+        self.config = ""
+        self.username_hash = ""
+        self.password_hash = ""
+        self.dummy = False
+        # !will open configuration file to capture salt.
         try:
-            with open(program_config,'r') as config:
-                self.config=config.readlines()
-            with open("pmanager.key",'r') as keys:
-                self.keyfile=keys.readlines()
+            with open(program_config, 'r') as config:
+                self.config = config.readlines()
+            with open("pmanager.key", 'r') as keys:
+                self.keyfile = keys.readlines()
         except FileNotFoundError:
-            #!if any of the core files are absent it will request user to create new environment.
+            # !if any of the core files are absent it will request user to create new environment.
             self.error_msgBox = QMessageBox()
             self.error_msgBox.setIcon(QMessageBox.Critical)
             self.error_msgBox.setText("No Valid Environment Found Relating To Provided Credentials, Please Create New.")
@@ -504,33 +507,30 @@ class CHECKACCESS(object):
             self.error_msgBox.show()
             AccessCheck.close()
 
-
-
-
         for eachline in self.config:
-            eachline=eachline.replace("\n","")
+            eachline = eachline.replace("\n", "")
             if ">>" in eachline:
                 mkey_ret = eachline.split(">>")[1]
                 mkey = mkey_ret
                 DBSecurity = DatabaseAccess(mkey)
-                DBSecurity.UnlockDatabase() #!unlock before use.
+                DBSecurity.UnlockDatabase()  # !unlock before use.
             if "Environment:" in eachline:
-                eachline=eachline.split("Environment:")[1]
+                eachline = eachline.split("Environment:")[1]
                 if "ALREADYSET" in eachline:
-                    #!indication than master account already exists.
-                    with open("pmanager.key","r") as cred:
-                        cred_data=cred.readlines()
+                    # !indication than master account already exists.
+                    with open("pmanager.key", "r") as cred:
+                        cred_data = cred.readlines()
 
                     for eachline in cred_data:
-                        eachline=eachline.replace("\n","")
+                        eachline = eachline.replace("\n", "")
                         if "[U]" in eachline:
-                            #!to capture user hash
-                            self.username_hash=eachline.split("[U]")[1]
+                            # !to capture user hash
+                            self.username_hash = eachline.split("[U]")[1]
                         elif "[P]" in eachline:
-                            #!to capture password hash
-                            self.password_hash=eachline.split("[P]")[1]
+                            # !to capture password hash
+                            self.password_hash = eachline.split("[P]")[1]
 
-        #!now lets encrypt input credentials to match with captured hashes.
+        # !now lets encrypt input credentials to match with captured hashes.
         self.salt = b'\xb2\xc8\xe3\x00\x04\x03\xc5P\x88\x13Z\x1f\x9c\xe5R8'
         self.udf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -548,30 +548,26 @@ class CHECKACCESS(object):
         self.input_hydrogenPWD = self.input_hydrogenPWD.encode()
         Enc_InputID = base64.urlsafe_b64encode(self.udf.derive(self.input_hydrogenID)).decode()
         Enc_InputPWD = base64.urlsafe_b64encode(self.pdf.derive(self.input_hydrogenPWD)).decode()
-        
 
+        USERID_VERIFIED = False
+        USERPWD_VERIFIED = False
 
-        USERID_VERIFIED=False
-        USERPWD_VERIFIED=False
-        
-
-        #!authentication check.
+        # !authentication check.
         if Enc_InputID == self.username_hash:
-            #!userID matches.
-            USERID_VERIFIED=True
+            # !userID matches.
+            USERID_VERIFIED = True
             if Enc_InputPWD == self.password_hash:
-                #!password also matches.
-                USERPWD_VERIFIED=True
+                # !password also matches.
+                USERPWD_VERIFIED = True
             else:
-                USERPWD_VERIFIED=False
+                USERPWD_VERIFIED = False
         else:
-            #!userID not matches
-            USERID_VERIFIED=False
+            # !userID not matches
+            USERID_VERIFIED = False
 
-        #print(USERID_VERIFIED,USERPWD_VERIFIED)
+        # print(USERID_VERIFIED,USERPWD_VERIFIED)
         if len(self.username_hash) == 0 and len(self.password_hash) == 0 and len(self.config) == 0:
-            self.dummy=True
-
+            self.dummy = True
 
         if not USERID_VERIFIED or not USERPWD_VERIFIED:
             if self.dummy:
@@ -579,27 +575,23 @@ class CHECKACCESS(object):
             else:
                 self.error_msgBox = QMessageBox()
                 self.error_msgBox.setIcon(QMessageBox.Critical)
-                self.error_msgBox.setText("Invalid Request To Access Secure Environment Detected,\nPlease Enter Correct Credentials.")
+                self.error_msgBox.setText(
+                    "Invalid Request To Access Secure Environment Detected,\nPlease Enter Correct Credentials.")
                 self.error_msgBox.setWindowTitle("Invalid Authentication Request")
                 self.error_msgBox.setStandardButtons(QMessageBox.Ok)
                 self.error_msgBox.show()
 
         elif USERID_VERIFIED and USERPWD_VERIFIED:
-       	#!user provide us correct login information.       		
+            # !user provide us correct login information.
             AccessCheck.close()
             PWManager.show()
-
-            
-
-            
-
-
 
     def TriggerCheckAccess(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Hydrogen Access Check "))
         self.environment_creation_wizard.setText(_translate("Form", "Hydrogen - Secure Environment Access Check."))
-        self.label_2.setText(_translate("Form", "You Need To Provide The Master Credentials Which You Used For Creating Secure Environment."))
+        self.label_2.setText(_translate("Form",
+                                        "You Need To Provide The Master Credentials Which You Used For Creating Secure Environment."))
         self.CreateSecureWizard.setText(_translate("Form", "Access Enviroment"))
         self.CancelEnvWizard.setText(_translate("Form", "Cancel"))
         self.hydrogen_id_label.setText(_translate("Form", "Your Hydrogen ID : "))
@@ -631,7 +623,7 @@ class EnvCreationWizard(object):
         self.Hydrogen_ID = QtWidgets.QLineEdit(CreateWizardForm)
         self.Hydrogen_ID.setGeometry(QtCore.QRect(320, 161, 201, 41))
         self.Hydrogen_ID.setStyleSheet("color:green\n"
-"")
+                                       "")
         self.Hydrogen_ID.setText("")
         self.Hydrogen_ID.setObjectName("Hydrogen_ID")
         self.Hydrogen_Password = QtWidgets.QLineEdit(CreateWizardForm)
@@ -662,18 +654,20 @@ class EnvCreationWizard(object):
 
         self.TriggerCreationWizard(CreateWizardForm)
         QtCore.QMetaObject.connectSlotsByName(CreateWizardForm)
+
     def CloseCreationWizard(self):
         CreateWizardForm.close()
+
     def SaveHydrogenCredentials(self):
-        #!This method will Encrypt Hydrogen Credentials.
+        # !This method will Encrypt Hydrogen Credentials.
         try:
-            #!save credentials at user profile.
+            # !save credentials at user profile.
             self.userprofile_location = getenv('userprofile')
             chdir(self.userprofile_location)
         except:
-            #!use currect location only.
+            # !use currect location only.
             pass
-        #remove(database_name)
+        # remove(database_name)
         self.salt = b'\xb2\xc8\xe3\x00\x04\x03\xc5P\x88\x13Z\x1f\x9c\xe5R8'
         self.kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -691,40 +685,43 @@ class EnvCreationWizard(object):
         Password = self.Hydrogen_Password.text().encode()
         self.Hydrogen_ID.clear()
         self.Hydrogen_Password.clear()
-        Ukey = base64.urlsafe_b64encode(self.kdf.derive(user_ID)) #!username key is created.
-        Ukey = b"[U]"+Ukey
-        Pkey = base64.urlsafe_b64encode(self.qdf.derive(Password)) #! password key is generated.
-        Pkey = b"[P]"+Pkey
+        Ukey = base64.urlsafe_b64encode(self.kdf.derive(user_ID))  # !username key is created.
+        Ukey = b"[U]" + Ukey
+        Pkey = base64.urlsafe_b64encode(self.qdf.derive(Password))  # ! password key is generated.
+        Pkey = b"[P]" + Pkey
         mkey = Fernet.generate_key()
-        mkey = b">>"+mkey
-        with open('pmanager.key','wb') as keys:
+        mkey = b">>" + mkey
+        with open('pmanager.key', 'wb') as keys:
             keys.write(Ukey)
             keys.write(b"\n-----------------------------------\n")
             keys.write(Pkey)
             keys.write(b"\n-----------------------------------\n")
-        with open(program_config,'wb') as writeconfig:
+        with open(program_config, 'wb') as writeconfig:
             writeconfig.write(b'Environment:ALREADYSET\n')
             writeconfig.write(mkey)
             DBSecurity = DatabaseAccess(mkey)
-            
+
         self.msgBox = QMessageBox()
         self.msgBox.setIcon(QMessageBox.Information)
-        self.msgBox.setText("Secure Environment With Provided Credentials Created Successfully, Now You Can Start Using Password Manager.")
+        self.msgBox.setText(
+            "Secure Environment With Provided Credentials Created Successfully, Now You Can Start Using Password Manager.")
         self.msgBox.setWindowTitle("Sucess")
         self.msgBox.setStandardButtons(QMessageBox.Ok)
         self.msgBox.show()
         CreateWizardForm.close()
         SqlMgmt.CloseConnections()
-        DBSecurity.LockDatabase() #!lock initially.
-
+        DBSecurity.LockDatabase()  # !lock initially.
 
     def TriggerCreationWizard(self, CreateWizardForm):
         _translate = QtCore.QCoreApplication.translate
         CreateWizardForm.setWindowTitle(_translate("CreateWizardForm", "CreateWizardForm"))
-        self.environment_creation_wizard.setText(_translate("CreateWizardForm", "Hydrogen - Secure Environment Creation Wizard."))
-        self.label_2.setText(_translate("CreateWizardForm", "Secure Environement Is Nothing But A Kind Of Master Account \n"
-"Which Will Hold All Your Credentials Safetly."))
-        self.label_3.setText(_translate("CreateWizardForm", "(Recommended To Choose Password Containing Alpha Numeric And Special Characters.)"))
+        self.environment_creation_wizard.setText(
+            _translate("CreateWizardForm", "Hydrogen - Secure Environment Creation Wizard."))
+        self.label_2.setText(
+            _translate("CreateWizardForm", "Secure Environement Is Nothing But A Kind Of Master Account \n"
+                                           "Which Will Hold All Your Credentials Safetly."))
+        self.label_3.setText(_translate("CreateWizardForm",
+                                        "(Recommended To Choose Password Containing Alpha Numeric And Special Characters.)"))
         self.CreateSecureWizard.setText(_translate("CreateWizardForm", "Create Now"))
         self.CancelEnvWizard.setText(_translate("CreateWizardForm", "Cancel"))
         self.hydrogen_id_label.setText(_translate("CreateWizardForm", "New Hydrogen ID : "))
@@ -734,11 +731,11 @@ class EnvCreationWizard(object):
         self.CreateSecureWizard.clicked.connect(self.SaveHydrogenCredentials)
 
 
-
 class About_Me(object):
     """
     This class provides code for About Me GUI.
     """
+
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
@@ -799,6 +796,7 @@ class About_Me(object):
 
         self.AboutMeTrigger(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+
     def CloseAboutMe(self):
         Form.close()
 
@@ -814,23 +812,21 @@ class About_Me(object):
         self.label_7.setText(_translate("Form", "kevinthemetnik@gmail.com"))
         self.label_8.setText(_translate("Form", "/tanmayupadhyay91"))
         self.label_9.setText(_translate("Form", "https://github.com/tanmay606"))
-        self.label_10.setText(_translate("Form", "If you have any suggestions, criticism or want to stay connected with me\n"
-"You can connect with me on facebook or other social media accounts."))
+        self.label_10.setText(
+            _translate("Form", "If you have any suggestions, criticism or want to stay connected with me\n"
+                               "You can connect with me on facebook or other social media accounts."))
         self.pushButton.setText(_translate("Form", "Close Window"))
         self.pushButton.clicked.connect(self.CloseAboutMe)
-
-
-
-
 
 
 class PasswordManagerControllers(object):
     # !This Will Hold The Slots Of Program.
     def ExitApplication(self):
-        #print("exit signal received")
+        # print("exit signal received")
         MainWindow.close()  # !quit the whole program.
+
     def About_Programmer(self):
-        #print("about programmer signal")
+        # print("about programmer signal")
         Form.show()
 
     def CreateNewVault(self):
@@ -842,27 +838,27 @@ class PasswordManagerControllers(object):
                 self.userprofile_location = getenv('userprofile')
                 chdir(self.userprofile_location)
             except:
-                #!on the same location.
+                # !on the same location.
                 pass
             with open(program_config, 'r') as config:
                 configuration = config.read()
-            with open("pmanager.key","r") as keyfile:
-                credfile=keyfile.read()
+            with open("pmanager.key", "r") as keyfile:
+                credfile = keyfile.read()
             msgBox = QMessageBox(self.horizontalGroupBox)
             msgBox.setIcon(QMessageBox.Information)
             msgBox.setText("Environment Already Exists, Please Open Existing Secure Environment Using Credentials.")
             msgBox.setWindowTitle("Vault Already Exists")
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.show()
-            
+
         except FileNotFoundError:
             # !It Means No Vault Exists
-            #print("No Secure Environment Not Found, We Will Create One Now.")
+            # print("No Secure Environment Not Found, We Will Create One Now.")
             CreateWizardForm.show()
             pass
 
 
-class PasswordManagerUI(threading.Thread, PasswordManagerControllers,EnvCreationWizard):
+class PasswordManagerUI(threading.Thread, PasswordManagerControllers, EnvCreationWizard):
     def setupUi(self, MainWindow):
         threading.Thread.__init__(self)
         MainWindow.setObjectName("MainWindow")
@@ -948,10 +944,12 @@ class PasswordManagerUI(threading.Thread, PasswordManagerControllers,EnvCreation
         self.label_4.setText(_translate("MainWindow",
                                         "This Program Uses Strong Symmetric Encryption To Hold Your Sensitive Credentials."))
         self.ProgramSignals()
+
     def OpenVaultSystem(self):
         print("open vault signal ")
         AccessCheck.show()
         pass
+
     def ProgramSignals(self):
         # ! it will configure signals to be sended to slots.
         self.quit_application.clicked.connect(self.ExitApplication)
@@ -997,15 +995,15 @@ class Delete_DeleteFrm(object):
 
         self.retranslateUi(DeleteFrm)
         QtCore.QMetaObject.connectSlotsByName(DeleteFrm)
+
     def DeleteTargetId(self):
         self.targetID = self.delete_id.text()
-        #SqlMgmt = DatabaseManagement(database_name)
+        # SqlMgmt = DatabaseManagement(database_name)
         SqlMgmt.DeleteWholeRow(int(self.targetID))
         DeleteFrm.close()
 
     def CloseDeleteBox(self):
         DeleteFrm.close()
-
 
     def retranslateUi(self, DeleteFrm):
         _translate = QtCore.QCoreApplication.translate
@@ -1016,8 +1014,6 @@ class Delete_DeleteFrm(object):
         self.no_delete.setText(_translate("DeleteFrm", "Cancel"))
         self.yes_delete.clicked.connect(self.DeleteTargetId)
         self.no_delete.clicked.connect(self.CloseDeleteBox)
-
-
 
 
 if __name__ == "__main__":
@@ -1051,7 +1047,5 @@ if __name__ == "__main__":
     DeleteFrm = QtWidgets.QWidget()
     DeleteFrmUI = Delete_DeleteFrm()
     DeleteFrmUI.setupUi(DeleteFrm)
-   
-     
-    
+
     sys.exit(app.exec_())
