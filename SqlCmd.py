@@ -10,6 +10,7 @@ from os import remove
 class DatabaseManagement(object):
 	"""
 	This API Is Designed To Be Used As Database Manager For Hydrogen Password Manager Program.
+	It Will Work As Importable Module.
 	"""
 	IsClose = False
 	def __init__(self,databasefile):
