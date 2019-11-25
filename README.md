@@ -54,7 +54,7 @@ Resources :
    1. Recovery Of Master Password Is Not Supported Till Now.
    2. Code Is Currently Not Quite UserFriendly.
    3. Need To Work On More Efficiency And Security.
-   4. Due To Implementation Of Database Encryption Mechanism Avoid Closing Program Indirectly.
+   4. Due To Implementation Of Database Encryption Mechanism Avoid Closing Program Indirectly. (SOLVED)
 
    (I Will Appreciate Your Feedbacks, Criticism,Suggestions etc. )
 
@@ -71,4 +71,7 @@ Resources :
  2. PyQt5
 
 
-(If black window annoys you , just change .py extention with .pyw)
+(If black window annoys you , just change .py extention with .pyw )
+
+
+You can also make executable (.exe ) file using pyinstaller which will help you to make this program portable to other machines.
