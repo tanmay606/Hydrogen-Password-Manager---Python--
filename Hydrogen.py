@@ -20,7 +20,7 @@ except ImportError:
 	pass
 
 program_config = 'Hydrogen.conf'
-database_name = 'secure.db'
+database_name = 'secured.db'
 database_status = True
 mkey = b"" #!responsible for storing key for encryption mechanism. ( don't touch it unless you know what you are doing.)
 
