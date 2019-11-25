@@ -89,6 +89,7 @@ class DatabaseAccess(object):
 class SB_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
+        Dialog.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         Dialog.resize(638, 480)
         self.formGroupBox = QtWidgets.QGroupBox(Dialog)
         self.formGroupBox.setGeometry(QtCore.QRect(60, 170, 511, 221))
@@ -251,6 +252,7 @@ class SB_Dialog(object):
 class Ui_PWManager(object):
     def setupUi(self, PWManager):
         PWManager.setObjectName("PWManager")
+        PWManager.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         PWManager.resize(940, 480)
         font = QtGui.QFont()
         font.setFamily("Segoe MDL2 Assets")
@@ -333,9 +335,9 @@ class Ui_PWManager(object):
 
     def ClosePWDManager(self):
         #print(mkey)
-        #DBSecurity = DatabaseAccess(mkey)
+        DBSecurity = DatabaseAccess(mkey)
         SqlMgmt.CloseConnections()
-        #DBSecurity.LockDatabase() #!lock at the end.
+        DBSecurity.LockDatabase() #!lock at the end.
         self.table_widget.clearContents()
         #SqlMgmt.CloseConnections()
         PWManager.close()
@@ -409,6 +411,7 @@ class Ui_PWManager(object):
 class CHECKACCESS(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
+        Form.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         Form.resize(666, 490)
         self.environment_creation_wizard = QtWidgets.QLabel(Form)
         self.environment_creation_wizard.setGeometry(QtCore.QRect(90, 20, 491, 51))
@@ -509,8 +512,8 @@ class CHECKACCESS(object):
             if ">>" in eachline:
                 mkey_ret = eachline.split(">>")[1]
                 mkey = mkey_ret
-                #DBSecurity = DatabaseAccess(mkey)
-                #DBSecurity.UnlockDatabase() #!unlock before use.
+                DBSecurity = DatabaseAccess(mkey)
+                DBSecurity.UnlockDatabase() #!unlock before use.
             if "Environment:" in eachline:
                 eachline=eachline.split("Environment:")[1]
                 if "ALREADYSET" in eachline:
@@ -608,6 +611,7 @@ class CHECKACCESS(object):
 class EnvCreationWizard(object):
     def setupUi(self, CreateWizardForm):
         CreateWizardForm.setObjectName("CreateWizardForm")
+        CreateWizardForm.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         CreateWizardForm.resize(666, 490)
         self.environment_creation_wizard = QtWidgets.QLabel(CreateWizardForm)
         self.environment_creation_wizard.setGeometry(QtCore.QRect(90, 20, 491, 51))
@@ -701,7 +705,7 @@ class EnvCreationWizard(object):
         with open(program_config,'wb') as writeconfig:
             writeconfig.write(b'Environment:ALREADYSET\n')
             writeconfig.write(mkey)
-            #DBSecurity = DatabaseAccess(mkey)
+            DBSecurity = DatabaseAccess(mkey)
             
         self.msgBox = QMessageBox()
         self.msgBox.setIcon(QMessageBox.Information)
@@ -711,7 +715,7 @@ class EnvCreationWizard(object):
         self.msgBox.show()
         CreateWizardForm.close()
         SqlMgmt.CloseConnections()
-        #DBSecurity.LockDatabase() #!lock initially.
+        DBSecurity.LockDatabase() #!lock initially.
 
 
     def TriggerCreationWizard(self, CreateWizardForm):
@@ -737,6 +741,7 @@ class About_Me(object):
     """
     def setupUi(self, Form):
         Form.setObjectName("Form")
+        Form.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         Form.resize(640, 620)
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(200, 20, 291, 71))
@@ -861,6 +866,7 @@ class PasswordManagerUI(threading.Thread, PasswordManagerControllers,EnvCreation
     def setupUi(self, MainWindow):
         threading.Thread.__init__(self)
         MainWindow.setObjectName("MainWindow")
+        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         MainWindow.resize(640, 480)
         MainWindow.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -896,6 +902,7 @@ class PasswordManagerUI(threading.Thread, PasswordManagerControllers,EnvCreation
         self.horizontalLayout.addWidget(self.quit_application)
         self.commandLinkButton = QtWidgets.QCommandLinkButton(self.centralwidget)
         self.commandLinkButton.setGeometry(QtCore.QRect(160, 410, 281, 48))
+
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(7)
