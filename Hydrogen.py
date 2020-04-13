@@ -13,9 +13,10 @@ try:
     from Ersr import Eraser
 except ImportError:
     print("Please Install Required Modules Below To Run This Program : ")
-    print("1. cryptography")
-    print("2. PyQt5 ")
+    print("1. Cryptography For Encryption Support.")
+    print("2. PyQt5 For GUI Support")
     print("3. SqlCmd (ensure it exists in hydrogen directory )")
+    print("4. Sqlite3 For Database Support.")
     print("\n To Install Use : (pip install modulename)")
     input()
     pass
