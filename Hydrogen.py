@@ -49,7 +49,7 @@ class DatabaseAccess(object):
     def __init__(self, mkey):
         self.mkey = mkey
         pass
-
+"""
     def LockDatabase(self):
         # print("locking")
         with open(DatabaseAccess.orginal_db_name, "rb") as a:
@@ -64,7 +64,8 @@ class DatabaseAccess(object):
             SqlMgmt.DeleteDatabase()
 
         pass
-
+"""
+"""
     def UnlockDatabase(self):
         with open(DatabaseAccess.newdatabase_name, "rb") as c:
             self.enctext = c.read()
@@ -86,7 +87,7 @@ class DatabaseAccess(object):
         with open(DatabaseAccess.orginal_db_name, "wb") as d:
             d.write(dec_db)
         pass
-
+"""
 
 class SB_Dialog(object):
     def setupUi(self, Dialog):
@@ -256,11 +257,6 @@ class Ui_PWManager(object):
         PWManager.setObjectName("PWManager")
         PWManager.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
         PWManager.resize(940, 480)
-        font = QtGui.QFont()
-        font.setFamily("Segoe MDL2 Assets")
-        font.setBold(False)
-        font.setWeight(50)
-        PWManager.setFont(font)
         self.table_widget = QtWidgets.QTableWidget(PWManager)
         self.table_widget.setGeometry(QtCore.QRect(50, 70, 511, 351))
         self.table_widget.setRowCount(100)
@@ -339,7 +335,7 @@ class Ui_PWManager(object):
         # print(mkey)
         DBSecurity = DatabaseAccess(mkey)
         SqlMgmt.CloseConnections()
-        DBSecurity.LockDatabase()  # !lock at the end.
+        #DBSecurity.LockDatabase()  # !lock at the end.
         self.table_widget.clearContents()
         # SqlMgmt.CloseConnections()
         PWManager.close()
@@ -433,14 +429,14 @@ class CHECKACCESS(object):
         self.label_2.setObjectName("label_2")
         self.Hydrogen_ID = QtWidgets.QLineEdit(Form)
         self.Hydrogen_ID.setGeometry(QtCore.QRect(320, 161, 201, 41))
-        self.Hydrogen_ID.setStyleSheet("color:green\n"
+        self.Hydrogen_ID.setStyleSheet("color:black\n"
                                        "")
         self.Hydrogen_ID.setText("")
         self.Hydrogen_ID.setObjectName("Hydrogen_ID")
         self.Hydrogen_Password = QtWidgets.QLineEdit(Form)
         self.Hydrogen_Password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.Hydrogen_Password.setGeometry(QtCore.QRect(320, 261, 201, 41))
-        self.Hydrogen_Password.setStyleSheet("color:green")
+        self.Hydrogen_Password.setStyleSheet("color:black")
         self.Hydrogen_Password.setObjectName("Hydrogen_Password")
         self.label_3 = QtWidgets.QLabel(Form)
         self.label_3.setGeometry(QtCore.QRect(60, 340, 571, 20))
@@ -514,7 +510,7 @@ class CHECKACCESS(object):
                 mkey_ret = eachline.split(">>")[1]
                 mkey = mkey_ret
                 DBSecurity = DatabaseAccess(mkey)
-                DBSecurity.UnlockDatabase()  # !unlock before use.
+                #DBSecurity.UnlockDatabase()  # !unlock before use.
             if "Environment:" in eachline:
                 eachline = eachline.split("Environment:")[1]
                 if "ALREADYSET" in eachline:
@@ -623,13 +619,13 @@ class EnvCreationWizard(object):
         self.label_2.setObjectName("label_2")
         self.Hydrogen_ID = QtWidgets.QLineEdit(CreateWizardForm)
         self.Hydrogen_ID.setGeometry(QtCore.QRect(320, 161, 201, 41))
-        self.Hydrogen_ID.setStyleSheet("color:green\n"
+        self.Hydrogen_ID.setStyleSheet("color:black\n"
                                        "")
         self.Hydrogen_ID.setText("")
         self.Hydrogen_ID.setObjectName("Hydrogen_ID")
         self.Hydrogen_Password = QtWidgets.QLineEdit(CreateWizardForm)
         self.Hydrogen_Password.setGeometry(QtCore.QRect(320, 261, 201, 41))
-        self.Hydrogen_Password.setStyleSheet("color:green")
+        self.Hydrogen_Password.setStyleSheet("color:black")
         self.Hydrogen_Password.setObjectName("Hydrogen_Password")
         self.label_3 = QtWidgets.QLabel(CreateWizardForm)
         self.label_3.setGeometry(QtCore.QRect(60, 340, 571, 20))
@@ -711,7 +707,7 @@ class EnvCreationWizard(object):
         self.msgBox.show()
         CreateWizardForm.close()
         SqlMgmt.CloseConnections()
-        DBSecurity.LockDatabase()  # !lock initially.
+        #DBSecurity.LockDatabase()  # !lock initially.
 
     def TriggerCreationWizard(self, CreateWizardForm):
         _translate = QtCore.QCoreApplication.translate
